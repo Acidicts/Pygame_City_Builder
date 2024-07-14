@@ -1,4 +1,5 @@
 import pygame
+import random
 from .settings import TILESIZE
 
 
@@ -9,6 +10,8 @@ class World:
         self.width = width
         self.height = height
 
+        self.grass_tiles = pygame.Surface((self.width, self.height))
+        self.tiles = self.load_images()
         self.world = self.create_world()
 
     def create_world(self):
@@ -21,22 +24,39 @@ class World:
                 world_tile = self.grid_to_world(grid_x, grid_y)
                 world[grid_x].append(world_tile)
 
+                render_pos = world_tile['render_pos']
+                pos = (render_pos[0] + self.width/2, render_pos[1] + self.height/4)
+                self.grass_tiles.blit(self.tiles['block'], pos)
+
         return world
 
     def grid_to_world(self, grid_x, grid_y):
         rect = [
-            (grid_x * TILESIZE, grid_y*TILESIZE),
-            (grid_x * TILESIZE + TILESIZE, grid_y*TILESIZE),
-            (grid_x * TILESIZE + TILESIZE, grid_y*TILESIZE + TILESIZE),
+            (grid_x * TILESIZE, grid_y * TILESIZE),
+            (grid_x * TILESIZE + TILESIZE, grid_y * TILESIZE),
+            (grid_x * TILESIZE + TILESIZE, grid_y * TILESIZE + TILESIZE),
             (grid_x * TILESIZE, grid_y*TILESIZE + TILESIZE)
         ]
 
         iso_poly = [self.cart_to_iso(x, y) for x, y in rect]
 
+        minx = min(x for x, y in iso_poly)
+        miny = min(y for x, y in iso_poly)
+
+        r = random.randint(1, 100)
+        if r <= 5:
+            tile = "tree"
+        elif r <= 10:
+            tile = "rock"
+        else:
+            tile = ""
+
         out = {
             "grid": [grid_x, grid_y],
             "cart_rect": rect,
             'iso_poly': iso_poly,
+            'render_pos': [minx, miny],
+            "tile": tile,
         }
 
         return out
@@ -46,3 +66,11 @@ class World:
         iso_y = (x + y) / 2
 
         return iso_x, iso_y
+
+    def load_images(self):
+
+        block = pygame.image.load('assets/graphics/block.png')
+        tree = pygame.image.load('assets/graphics/tree.png')
+        rock = pygame.image.load('assets/graphics/rock.png')
+
+        return {"block": block, "tree": tree, "rock": rock}
