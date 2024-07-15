@@ -4,6 +4,7 @@ from .world import World
 from .settings import TILE_SIZE
 from .utils import draw_text
 from .camera import Camera
+from .hud import Hud
 
 
 class Game:
@@ -16,6 +17,8 @@ class Game:
         self.world = World(100, 100, self.width, self.height)
 
         self.camera = Camera(self.width, self.height)
+
+        self.hud = Hud(self.width, self.height)
 
     def run(self):
         self.playing = True
@@ -40,6 +43,7 @@ class Game:
 
     def update(self):
         self.camera.update()
+        self.hud.update()
 
     def draw(self):
         self.screen.fill((0, 0, 0))
@@ -54,7 +58,7 @@ class Game:
                 # pygame.draw.rect(self.screen, (0, 0, 255), rect, 1)
 
                 render_pos = self.world.world[x][y]['render_pos']
-                pos = (render_pos[0] + self.width / 2, render_pos[1] + self.height / 4)
+                # pos = (render_pos[0] + self.width / 2, render_pos[1] + self.height / 4)
                 # self.screen.blit(self.world.tiles['block'], pos)
 
                 tile = self.world.world[x][y]['tile']
@@ -69,12 +73,14 @@ class Game:
                 # p = [(x + self.width/2, y + self.height/4) for x, y in p]
                 # pygame.draw.polygon(self.screen, (255, 0, 0), p, 1)
 
+        self.hud.draw(self.screen)
+
         draw_text(
             self.screen,
             "FPS : {}".format(str(round(self.clock.get_fps()))),
-            30,
+            10,
             (255, 255, 255),
-            (10, 10)
+            (5, 5)
         )
 
         pygame.display.flip()

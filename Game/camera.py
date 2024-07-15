@@ -1,5 +1,6 @@
 import pygame
 
+
 class Camera:
     def __init__(self, width, height):
         self.width = width
@@ -11,7 +12,6 @@ class Camera:
         self.speed = 25
 
     def update(self):
-
         mouse_pos = pygame.mouse.get_pos()
 
         if mouse_pos[0] > self.width * 0.97:
