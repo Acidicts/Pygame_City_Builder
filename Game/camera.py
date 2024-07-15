@@ -1,18 +1,22 @@
-import pygame
+
+import pygame as pg
 
 
 class Camera:
+
     def __init__(self, width, height):
+
         self.width = width
         self.height = height
 
-        self.scroll = pygame.Vector2(0, 0)
+        self.scroll = pg.Vector2(0, 0)
         self.dx = 0
         self.dy = 0
         self.speed = 25
 
     def update(self):
-        mouse_pos = pygame.mouse.get_pos()
+
+        mouse_pos = pg.mouse.get_pos()
 
         if mouse_pos[0] > self.width * 0.97:
             self.dx = -self.speed
@@ -28,5 +32,6 @@ class Camera:
         else:
             self.dy = 0
 
+        # update camera scroll
         self.scroll.x += self.dx
         self.scroll.y += self.dy
