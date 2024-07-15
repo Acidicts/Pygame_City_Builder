@@ -22,7 +22,10 @@ class World:
         self.tiles = self.load_images()
         self.world = self.create_world()
 
+        self.collision_matrix = self.create_collision_matrix()
+
         self.buildings = [[None for _ in range(self.grid_length_x)] for _ in range(grid_length_y)]
+        self.workers = [[None for _ in range(self.grid_length_x)] for _ in range(grid_length_y)]
 
         self.temp_tile = None
         self.examine_tile = None
@@ -69,6 +72,7 @@ class World:
                         self.buildings[x][y] = ent
 
                     self.world[grid_pos[0]][grid_pos[1]]["collision"] = True
+                    self.collision_matrix[grid_pos[1]][grid_pos[0]] = 0
                     self.hud.selected_tile = None
 
         else:
@@ -103,13 +107,19 @@ class World:
                                 )
 
                     if self.examine_tile is not None and x == self.examine_tile[0] and y == self.examine_tile[1]:
-                        # Ensure tile is not an empty string before creating a mask
                         if tile != "":
                             mask = pg.mask.from_surface(self.tiles[tile]).outline()
                             mask = [(x + render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
                                      y + render_pos[1] - (self.tiles[tile].get_height() - TILE_SIZE) + camera.scroll.y)
                                     for x, y in mask]
                             pg.draw.polygon(screen, (255, 255, 255), mask, 3)
+
+                worker = self.workers[x][y]
+                if worker is not None:
+                    screen.blit(worker.image,
+                                (render_pos[0] + self.grass_tiles.get_width() / 2 + camera.scroll.x,
+                                 render_pos[1] - (worker.image.get_height() - TILE_SIZE) + camera.scroll.y)
+                                )
 
         if self.temp_tile is not None:
             iso_poly = self.temp_tile["iso_poly"]
@@ -181,6 +191,15 @@ class World:
         }
 
         return out
+
+    def create_collision_matrix(self):
+        collision_matrix = [[1 for x in range(self.grid_length_x)] for y in range(self.grid_length_y)]
+        for x in range(self.grid_length_x):
+            for y in range(self.grid_length_y):
+                if self.world[x][y]["collision"]:
+                    collision_matrix[y][x] = 0
+
+        return collision_matrix
 
     @staticmethod
     def cart_to_iso(x, y):
