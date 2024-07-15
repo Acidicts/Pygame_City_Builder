@@ -6,7 +6,8 @@ from .buildings import Lumbermill, Stonemasonry
 
 
 class World:
-    def __init__(self, entities, hud, grid_length_x, grid_length_y, width, height):
+    def __init__(self, resource_manager, entities, hud, grid_length_x, grid_length_y, width, height):
+        self.resource_manager = resource_manager
         self.entities = entities
         self.hud = hud
         self.grid_length_x = grid_length_x
@@ -59,11 +60,11 @@ class World:
                     x, y = grid_pos
 
                     if self.hud.selected_tile["name"] == "lumbermill":
-                        ent = Lumbermill(render_pos)
+                        ent = Lumbermill(render_pos, self.resource_manager)
                         self.entities.append(ent)
                         self.buildings[x][y] = ent
                     elif self.hud.selected_tile["name"] == "stonemasonry":
-                        ent = Stonemasonry(render_pos)
+                        ent = Stonemasonry(render_pos, self.resource_manager)
                         self.entities.append(ent)
                         self.buildings[x][y] = ent
 
