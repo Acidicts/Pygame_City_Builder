@@ -1,6 +1,6 @@
 import pygame
 import random
-from .settings import TILESIZE
+from .settings import TILE_SIZE
 
 
 class World:
@@ -10,7 +10,7 @@ class World:
         self.width = width
         self.height = height
 
-        self.grass_tiles = pygame.Surface((self.width, self.height))
+        self.grass_tiles = pygame.Surface((self.grid_length_x * TILE_SIZE * 2, self.grid_length_y * TILE_SIZE * 2)).convert_alpha()
         self.tiles = self.load_images()
         self.world = self.create_world()
 
@@ -26,16 +26,17 @@ class World:
 
                 render_pos = world_tile['render_pos']
                 pos = (render_pos[0] + self.width/2, render_pos[1] + self.height/4)
-                self.grass_tiles.blit(self.tiles['block'], pos)
+                self.grass_tiles.blit(self.tiles['block'], (render_pos[0] + self.grass_tiles.get_width() / 2,
+                                                            render_pos[1]))
 
         return world
 
     def grid_to_world(self, grid_x, grid_y):
         rect = [
-            (grid_x * TILESIZE, grid_y * TILESIZE),
-            (grid_x * TILESIZE + TILESIZE, grid_y * TILESIZE),
-            (grid_x * TILESIZE + TILESIZE, grid_y * TILESIZE + TILESIZE),
-            (grid_x * TILESIZE, grid_y*TILESIZE + TILESIZE)
+            (grid_x * TILE_SIZE, grid_y * TILE_SIZE),
+            (grid_x * TILE_SIZE + TILE_SIZE, grid_y * TILE_SIZE),
+            (grid_x * TILE_SIZE + TILE_SIZE, grid_y * TILE_SIZE + TILE_SIZE),
+            (grid_x * TILE_SIZE, grid_y * TILE_SIZE + TILE_SIZE)
         ]
 
         iso_poly = [self.cart_to_iso(x, y) for x, y in rect]
@@ -69,8 +70,8 @@ class World:
 
     def load_images(self):
 
-        block = pygame.image.load('assets/graphics/block.png')
-        tree = pygame.image.load('assets/graphics/tree.png')
-        rock = pygame.image.load('assets/graphics/rock.png')
+        block = pygame.image.load('assets/graphics/block.png').convert_alpha()
+        tree = pygame.image.load('assets/graphics/tree.png').convert_alpha()
+        rock = pygame.image.load('assets/graphics/rock.png').convert_alpha()
 
         return {"block": block, "tree": tree, "rock": rock}
