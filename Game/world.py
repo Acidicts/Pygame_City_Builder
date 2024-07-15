@@ -1,5 +1,6 @@
 import pygame
 import random
+import noise
 from .settings import TILE_SIZE
 
 
@@ -10,7 +11,10 @@ class World:
         self.width = width
         self.height = height
 
-        self.grass_tiles = pygame.Surface((self.grid_length_x * TILE_SIZE * 2, self.grid_length_y * TILE_SIZE * 2)).convert_alpha()
+        self.perlin_scale = grid_length_x / 2
+
+        self.grass_tiles = pygame.Surface((self.grid_length_x * TILE_SIZE * 2,
+                                           self.grid_length_y * TILE_SIZE * 2)).convert_alpha()
         self.tiles = self.load_images()
         self.world = self.create_world()
 
@@ -25,7 +29,6 @@ class World:
                 world[grid_x].append(world_tile)
 
                 render_pos = world_tile['render_pos']
-                pos = (render_pos[0] + self.width/2, render_pos[1] + self.height/4)
                 self.grass_tiles.blit(self.tiles['block'], (render_pos[0] + self.grass_tiles.get_width() / 2,
                                                             render_pos[1]))
 
@@ -45,12 +48,17 @@ class World:
         miny = min(y for x, y in iso_poly)
 
         r = random.randint(1, 100)
-        if r <= 5:
+        perlin = 100 * noise.pnoise2(grid_x / self.perlin_scale, grid_y / self.perlin_scale)
+
+        if (perlin >= 15) or (perlin <= -35):
             tile = "tree"
-        elif r <= 10:
-            tile = "rock"
         else:
-            tile = ""
+            if r == 1:
+                tile = "tree"
+            elif r == 2:
+                tile = "rock"
+            else:
+                tile = ""
 
         out = {
             "grid": [grid_x, grid_y],
@@ -62,13 +70,15 @@ class World:
 
         return out
 
-    def cart_to_iso(self, x, y):
+    @staticmethod
+    def cart_to_iso(x, y):
         iso_x = x - y
         iso_y = (x + y) / 2
 
         return iso_x, iso_y
 
-    def load_images(self):
+    @staticmethod
+    def load_images():
 
         block = pygame.image.load('assets/graphics/block.png').convert_alpha()
         tree = pygame.image.load('assets/graphics/tree.png').convert_alpha()
