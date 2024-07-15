@@ -27,6 +27,7 @@ class Hud:
         self.tiles = self.create_build_hud()
 
         self.selected_tile = None
+        self.examined_tile = None
 
     def create_build_hud(self):
 
@@ -71,7 +72,14 @@ class Hud:
     def draw(self, screen):
         screen.blit(self.resources_surface, (0, 0))
         screen.blit(self.build_surface, (self.width * 0.84, self.height * 0.74))
-        screen.blit(self.select_surface, (self.width * 0.35, self.height * 0.79))
+
+        if self.examined_tile is not None:
+            w, h = self.select_rect.width, self.select_rect.height
+            screen.blit(self.select_surface, (self.width * 0.35, self.height * 0.79))
+            img = self.images[self.examined_tile["tile"]].copy()
+            img_scale = self.scale_image(img, h=h*0.9)
+            screen.blit(img_scale, (self.width * 0.35 + 10, self.height * 0.79 + 10))
+            draw_text(screen, self.examined_tile["tile"], 40, (255, 255, 255), self.select_rect.center)
 
         for tile in self.tiles:
             screen.blit(tile["icon"], tile["rect"].topleft)

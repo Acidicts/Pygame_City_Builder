@@ -19,5 +19,6 @@ def main():
         while playing:
             game.run()
 
+
 if __name__ == "__main__":
     main()
