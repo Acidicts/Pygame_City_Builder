@@ -15,8 +15,10 @@ class Game:
         self.width, self.height = self.screen.get_size()
         self.playing = False
 
+        self.entities = []
+
         self.hud = Hud(self.width, self.height)
-        self.world = World(self.hud, 50, 50, self.width, self.height)
+        self.world = World(self.entities, self.hud, 50, 50, self.width, self.height)
         self.camera = Camera(self.width, self.height)
 
     def run(self):
@@ -42,6 +44,10 @@ class Game:
 
     def update(self):
         self.camera.update()
+
+        for e in self.entities:
+            e.update()
+
         self.hud.update()
         self.world.update(self.camera)
 
